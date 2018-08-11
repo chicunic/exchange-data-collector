@@ -1,29 +1,31 @@
 <template>
-  <div id="app">
-    <div id="nav">
-      <router-link to="/">Home</router-link> |
-      <router-link to="/about">About</router-link>
-    </div>
-    <router-view/>
+  <div class="showDifference">
+    <b-navbar variant="faded" type="light" class="border-bottom shadow-sm">
+      <b-navbar-brand tag="h1" class="mb-0">Price between max and min in Bitcoin</b-navbar-brand>
+    </b-navbar>
+    <b-table striped hover :items="items"></b-table>
   </div>
 </template>
 
-<style lang="scss">
-#app {
-  font-family: 'Avenir', Helvetica, Arial, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  text-align: center;
-  color: #2c3e50;
-}
-#nav {
-  padding: 30px;
-  a {
-    font-weight: bold;
-    color: #2c3e50;
-    &.router-link-exact-active {
-      color: #42b983;
+<script>
+export default {
+  data () {
+    return {
+      // binding to template
+      items: []
     }
+  },
+  mounted () {
+    // get data from server
+    this.axios
+      .get('./api')
+      .then(response => {
+        this.items = response.data
+        console.log(response)
+      })
+      .catch(error => {
+        console.log(error)
+      })
   }
 }
-</style>
+</script>
