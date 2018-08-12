@@ -11,7 +11,11 @@ export default new Router({
     {
       path: '/',
       name: 'app',
-      component: app
+      component: app,
+      meta: {
+        // web page title
+        title: 'Price between max and min of Bitcoin'
+      }
     }
   ]
 })

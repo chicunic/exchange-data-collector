@@ -1,6 +1,6 @@
 # exchange-data-collector
 
-This project could collect the exchange API from Bitcoin and show the differ between the max and min price.
+This project could collect the exchange API from Bitcoin and show the differ between the max and min prices.
 
 ## Project structure
 ```
