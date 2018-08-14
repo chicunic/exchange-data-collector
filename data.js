@@ -1,3 +1,4 @@
+const _ = require('lodash')
 const axios = require('axios')
 const MongoClient = require('mongodb').MongoClient
 const schedule = require('node-schedule')
@@ -20,34 +21,25 @@ MongoClient.connect(dbUrl, (err, client) => {
 
   // Timer for every 15 seconds
   schedule.scheduleJob('0,15,30,45 * * * * *', () => {
-    getData()
+    // URL of bitcoin ticker API
+    let url = 'https://blockchain.info/ticker'
+    // Get ticker by HTTP GET request
+    axios.get(url)
       .then(originData => {
-        // originData: Data from ticker
+        // originData.data: Data from ticker
         // formatedData: Data to save in database
-        let formatedData = reformatData(originData)
+        let formatedData = reformatData(originData.data)
+        console.log(formatedData)
         col.insert(formatedData, () => {
           console.log('Insert successful at', Date())
         })
       })
+      .catch(error => {
+        console.log(error)
+      })
   })
 })
 
-// Get data from ticker
-function getData () {
-  // URL of bitcoin ticker API
-  let url = 'https://blockchain.info/ticker'
-  let currentData
-  // Get ticker by HTTP GET request
-  return axios.get(url)
-    .then(response => {
-      currentData = response.data
-    })
-    .catch(error => {
-      console.log(error)
-    }).then(() => {
-      return currentData
-    })
-}
 // Reformat data
 function reformatData (originData) {
   let currentDateTime = new Date()
@@ -72,22 +64,14 @@ function reformatDateTime (currentDateTime) {
   let datetime = ''
   datetime += currentDateTime.getFullYear()
   datetime += '-'
-  datetime += convertNumberToString(currentDateTime.getMonth() + 1)
+  datetime += _.padStart((currentDateTime.getMonth() + 1), 2, '0')
   datetime += '-'
-  datetime += convertNumberToString(currentDateTime.getDate())
+  datetime += _.padStart(currentDateTime.getDate(), 2, '0')
   datetime += ' '
-  datetime += convertNumberToString(currentDateTime.getHours())
+  datetime += _.padStart(currentDateTime.getHours(), 2, '0')
   datetime += ':'
-  datetime += convertNumberToString(currentDateTime.getMinutes())
+  datetime += _.padStart(currentDateTime.getMinutes(), 2, '0')
   datetime += ':'
-  datetime += convertNumberToString(currentDateTime.getSeconds())
+  datetime += _.padStart(currentDateTime.getSeconds(), 2, '0')
   return datetime
-}
-// Convert to double digits
-function convertNumberToString (originNumber) {
-  if (originNumber < 10) {
-    return '0' + originNumber.toString()
-  } else {
-    return originNumber.toString()
-  }
 }
